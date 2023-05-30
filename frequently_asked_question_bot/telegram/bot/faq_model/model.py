@@ -115,7 +115,9 @@ def find_similar_questions(question: str):
         res_tuple = ()
         seen = []
         for d in doc:
-            if d not in seen: 
+            if d not in seen:
+                print("ddd:",d)
+                print("seen:",seen)
                 for i,q in enumerate(questions):
                     if d[:20] in q:
                         res_tuple += ((q,i%q_len),)
