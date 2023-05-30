@@ -31,11 +31,11 @@ BM25=len(model)
 
 cur_index = 1
 
-#data_path = '/home/yuri/ru_dataset_3/'
-#p_path = '/home/yuri/pickle/'
-p_path = '/Users/yuriypeshkichev/Projects/itmo internship/pickle/'
+data_path = '/home/yuri/ru_dataset_3/'
+p_path = '/home/yuri/pickle/'
+#p_path = '/Users/yuriypeshkichev/Projects/itmo internship/pickle/'
 #p_path = '/app/pickle/'
-data_path = '/Users/yuriypeshkichev/Projects/itmo internship/ru_dataset_3/'
+#data_path = '/Users/yuriypeshkichev/Projects/itmo internship/ru_dataset_3/'
 #data_path = '/app/ru_dataset_3/'
 
 
