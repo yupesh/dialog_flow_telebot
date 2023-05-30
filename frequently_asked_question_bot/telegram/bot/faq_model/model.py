@@ -119,10 +119,11 @@ def find_similar_questions(question: str):
                 print("ddd:",d)
                 print("seen:",seen)
                 for i,q in enumerate(questions):
-                    if d[:20] in q:
-                        res_tuple += ((q,i%q_len),)
-                        seen.append(d)
-                        break
+                    if q not in seen:
+                        if d[:20] in q:
+                            res_tuple += ((q,i%q_len),)
+                            seen.append(q)
+                            break
             if len(res_tuple) == 5:
                 break
 
