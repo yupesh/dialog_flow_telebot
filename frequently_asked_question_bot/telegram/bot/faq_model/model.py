@@ -17,6 +17,7 @@ import pickle
 from pathlib import Path
 from rank_bm25 import BM25Okapi
 #from sklearn.feature_extraction import _stop_words
+import nltk
 from nltk.corpus import stopwords
 
 import faq_model.embed as embed
