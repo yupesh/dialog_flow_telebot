@@ -121,7 +121,7 @@ def find_similar_questions(question: str):
                         res_tuple += ((q,i%q_len),)
                         seen.append(d)
                         break
-                if len(seen) == 5:
+                if len(res_tuple) == 5:
                     break
 
         #print("tuple:",res_tuple)
