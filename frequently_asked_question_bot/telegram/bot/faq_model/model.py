@@ -21,6 +21,7 @@ from nltk.corpus import stopwords
 
 import faq_model.embed as embed
 
+nltk.download('stopwords')
 ru_stopwords = stopwords.words('russian')
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
