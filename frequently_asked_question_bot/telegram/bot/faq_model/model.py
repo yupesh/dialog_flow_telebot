@@ -22,7 +22,7 @@ from nltk.corpus import stopwords
 
 import faq_model.embed as embed
 
-nltk.download('stopwords')
+#nltk.download('stopwords')
 ru_stopwords = stopwords.words('russian')
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
@@ -109,14 +109,19 @@ def find_similar_questions(question: str):
     print("cur_index:",cur_index)
     
     if cur_index == BM25:
-        doc = bm25.get_top_n(question.split(" "),questions,n=5)
+        doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
         res_tuple = ()
+        seen = []
         for d in doc:
-            for i,q in enumerate(questions):
-                if d[:20] in q:
-                    res_tuple += ((q,i%q_len),)
+            if d not in seen: 
+                for i,q in enumerate(questions):
+                    if d[:20] in q:
+                        res_tuple += ((q,i%q_len),)
+                        seen.append(d)
+                        break
+                if len(seen) == 5:
                     break
 
         #print("tuple:",res_tuple)
