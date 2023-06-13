@@ -28,6 +28,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     )
 
     async def respond(request: Message):
+        print("request:",request)
         context = await pipeline._run_pipeline(request, client_id)
         response = context.last_response.text
         await websocket.send_text(response)
@@ -38,6 +39,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
 
         while True:
             data = await websocket.receive_text()
+            print("DATA:",data)
             await respond(Message(text=data))
     except WebSocketDisconnect:  # ignore disconnects
         pass
