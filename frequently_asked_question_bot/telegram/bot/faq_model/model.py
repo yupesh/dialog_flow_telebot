@@ -21,7 +21,6 @@ import nltk
 from nltk.corpus import stopwords
 
 import faq_model.embed as embed
-import copy
 
 #nltk.download('stopwords')
 ru_stopwords = stopwords.words('russian')
@@ -103,34 +102,6 @@ bm25 = BM25Okapi(tokenized_corpus)
 emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
 
 
-# def find_similar_questions(question: str):
-#     """Return a list of similar questions from the database."""
-
-#     print("cur_index:",cur_index)
-    
-#     if cur_index == BM25:
-#         doc = bm25.get_top_n(question.split(" "),questions,n=30)
-#         #print("doc:",doc[:100])
-
-#         res_tuple = ()
-#         seen = []
-#         for d in doc:
-#             if d not in seen:
-#                 print("ddd:",d)
-#                 print("seen:",seen)
-#                 for i,q in enumerate(questions):
-#                     if q not in seen:
-#                         if d[:20] in q:
-#                             res_tuple += ((q,i%q_len),)
-#                             seen.append(q)
-#                             break
-#             if len(res_tuple) == 5:
-#                 break
-
-#         #print("tuple:",res_tuple)
-#         return res_tuple
-    
-    
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
 
@@ -140,24 +111,24 @@ def find_similar_questions(question: str):
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
-        local_q = copy.deepcopy(questions)
-        
         res_tuple = ()
         seen = []
         for d in doc:
             if d not in seen:
                 print("ddd:",d)
                 print("seen:",seen)
-                ind = local_q.index(d[:20])
-                seen.append(local_q[ind])
-                res_tuple += ((local_q[ind],ind%q_len),)
-                local_q.pop(ind)
-
+                for i,q in enumerate(questions):
+                    if q not in seen:
+                        if d[:20] in q:
+                            res_tuple += ((q,i%q_len),)
+                            seen.append(q)
+                            break
             if len(res_tuple) == 5:
                 break
 
         #print("tuple:",res_tuple)
-        return res_tuple    
+        return res_tuple
+
                            
                            
     q_emb = embed.encode(question,tokenizer[cur_index],encoder[cur_index],model[cur_index])
