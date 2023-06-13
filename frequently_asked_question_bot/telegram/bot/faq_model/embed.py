@@ -4,7 +4,7 @@ from numpy import dot
 from numpy.linalg import norm
 import numpy as np
 
-device = "cuda:1" if torch.cuda.is_available() else "cpu"
+device = "cuda:2" if torch.cuda.is_available() else "cpu"
 
 def set_seed(seed):
     random.seed(seed)
