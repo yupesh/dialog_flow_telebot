@@ -33,11 +33,11 @@ BM25=len(model)
 
 cur_index = 1
 
-data_path = '/home/yuri/ru_dataset_3/'
-p_path = '/home/yuri/pickle/'
-#p_path = '/Users/yuriypeshkichev/Projects/itmo internship/pickle/'
+#data_path = '/home/yuri/ruonly_dataset/'
+#p_path = '/home/yuri/pickle/'
+p_path = '/Users/yuriypeshkichev/Projects/itmo internship/pickle/'
 #p_path = '/app/pickle/'
-#data_path = '/Users/yuriypeshkichev/Projects/itmo internship/ru_dataset_3/'
+data_path = '/Users/yuriypeshkichev/Projects/itmo internship/ruonly_dataset/'
 #data_path = '/app/ru_dataset_3/'
 
 
@@ -49,11 +49,10 @@ for i in range(len(model)):
 
 
 ds = load_from_disk(data_path)
-dox = list(filter(lambda x: x[1] == 'russian',zip(ds['document_plaintext'],ds['language'])))
-dox = [i[0] for i in dox]
-questions = list(filter(lambda x: x[1] == 'russian',zip(ds['question_text'],ds['language']))) +\
-            list(filter(lambda x: x[1] == 'russian',zip(ds['question_text_2'],ds['language'])))
-questions = [i[0] for i in questions]
+
+dox = list(ds['document_plaintext'])
+questions = list(ds['question_text']) + list(ds['question_text_2'])
+
 q_len = len(questions)//2
 
  
@@ -103,6 +102,34 @@ bm25 = BM25Okapi(tokenized_corpus)
 emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
 
 
+# def find_similar_questions(question: str):
+#     """Return a list of similar questions from the database."""
+
+#     print("cur_index:",cur_index)
+    
+#     if cur_index == BM25:
+#         doc = bm25.get_top_n(question.split(" "),questions,n=30)
+#         #print("doc:",doc[:100])
+
+#         res_tuple = ()
+#         seen = []
+#         for d in doc:
+#             if d not in seen:
+#                 print("ddd:",d)
+#                 print("seen:",seen)
+#                 for i,q in enumerate(questions):
+#                     if q not in seen:
+#                         if d[:20] in q:
+#                             res_tuple += ((q,i%q_len),)
+#                             seen.append(q)
+#                             break
+#             if len(res_tuple) == 5:
+#                 break
+
+#         #print("tuple:",res_tuple)
+#         return res_tuple
+    
+    
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
 
@@ -112,23 +139,24 @@ def find_similar_questions(question: str):
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
+        local_q = questions.deepcopy()
+        
         res_tuple = ()
         seen = []
         for d in doc:
             if d not in seen:
                 print("ddd:",d)
                 print("seen:",seen)
-                for i,q in enumerate(questions):
-                    if q not in seen:
-                        if d[:20] in q:
-                            res_tuple += ((q,i%q_len),)
-                            seen.append(q)
-                            break
+                ind = local_q.index(d[:20])
+                seen.append(local_q[ind])
+                res_tuple += ((local_q[ind],ind%q_len),)
+                locals.pop(ind)
+
             if len(res_tuple) == 5:
                 break
 
         #print("tuple:",res_tuple)
-        return res_tuple
+        return res_tuple    
                            
                            
     q_emb = embed.encode(question,tokenizer[cur_index],encoder[cur_index],model[cur_index])
