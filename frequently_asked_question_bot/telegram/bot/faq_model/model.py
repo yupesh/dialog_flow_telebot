@@ -21,6 +21,7 @@ import nltk
 from nltk.corpus import stopwords
 
 import faq_model.embed as embed
+import copy
 
 #nltk.download('stopwords')
 ru_stopwords = stopwords.words('russian')
