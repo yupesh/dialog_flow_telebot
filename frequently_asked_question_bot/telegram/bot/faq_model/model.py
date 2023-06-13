@@ -151,7 +151,7 @@ def find_similar_questions(question: str):
                 ind = local_q.index(d[:20])
                 seen.append(local_q[ind])
                 res_tuple += ((local_q[ind],ind%q_len),)
-                locals.pop(ind)
+                local_q.pop(ind)
 
             if len(res_tuple) == 5:
                 break
