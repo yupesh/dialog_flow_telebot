@@ -139,7 +139,7 @@ def find_similar_questions(question: str):
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
-        local_q = questions.deepcopy()
+        local_q = copy.deepcopy(questions)
         
         res_tuple = ()
         seen = []
