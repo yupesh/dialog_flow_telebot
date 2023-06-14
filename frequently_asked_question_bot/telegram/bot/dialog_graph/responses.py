@@ -71,7 +71,8 @@ def answer_question(ctx: Context, _: Pipeline):
         chunk = 30
         while len("".join(sentences[:chunk])) > 4000:
                chunk -= 1
-    return TelegramMessage(text="<b>This is my answer:</b>\n"+" ".join(sentences[:chunk]),parse_mode=ParseMode.HTML)
+        doc = " ".join(sentences[:chunk])
+    return TelegramMessage(text="<b>This is my answer:</b>\n"+doc,parse_mode=ParseMode.HTML)
 
 
 def change_model(ctx: Context, _: Pipeline):
