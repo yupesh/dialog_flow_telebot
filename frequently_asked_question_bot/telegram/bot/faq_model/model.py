@@ -84,9 +84,9 @@ def find_best_answer(example,m_name,toker,encer):
         
         emb_with_scores = tuple(zip(list(range(len(start))), map(lambda x: embed.cos(x,emb_list[0]), emb_list[1:])))
         res= sorted(emb_with_scores, key=lambda x: x[1])[-1]
-        example["best_answer"] = cand_list[res[0]]
+        #example["best_answer"] = cand_list[res[0]]
         
-    return example
+    return cand_list[res[0]]
 
 
 def load_model(model_name,tokenizer,encoder):
