@@ -154,7 +154,7 @@ emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(mode
 
 
 labse_name = 'cointegrated/LaBSE-en-ru'
-labse_index = model.index[labse_name]
+labse_index = model.index(labse_name)
 labse_dox = load_labse(labse_name,tokenizer[labse_index],encoder[labse_index])
 
 
