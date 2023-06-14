@@ -54,7 +54,41 @@ questions = list(ds['question_text']) + list(ds['question_text_2'])
 
 q_len = len(questions)//2
 
- 
+def find_best_answer(example,m_name,toker,encer):
+
+    start = example['passage_answer_candidates']['plaintext_start_byte']
+    end = example['passage_answer_candidates']['plaintext_end_byte']
+    cand_list = [example['document_plaintext'].encode("utf-8")[s:e].decode("utf-8", errors="replace") for s,e in zip(start,end)]
+    if m_name == "BM25":
+        example["best_answer"] = bm25.get_top_n(example['question_text'].split(" "),cand_list,n=1)[0]
+    else:
+
+        CHL = 200
+        iter_n = len(cand_list)//CHL
+        emb_list = []
+        flag = 0
+        for idx in range(iter_n):
+            if flag == 0:
+                cand_emb = embed.encode([example['question_text']]+cand_list[idx*CHL:(idx+1)*CHL],toker,encer,m_name)
+                flag = 1
+            else:
+                cand_emb = embed.encode(cand_list[idx*CHL:(idx+1)*CHL],toker,encer,m_name)
+            emb_list.extend(cand_emb)
+        if len(cand_list)%CHL > 0:
+            if flag == 0:
+                cand_emb = embed.encode([example['question_text']]+cand_list[iter_n*CHL:len(cand_list)],toker,encer,m_name)
+            else:
+                cand_emb = embed.encode(cand_list[iter_n*CHL:len(cand_list)],toker,encer,m_name)
+            emb_list.extend(cand_emb)
+          
+        
+        emb_with_scores = tuple(zip(list(range(len(start))), map(lambda x: embed.cos(x,emb_list[0]), emb_list[1:])))
+        res= sorted(emb_with_scores, key=lambda x: x[1])[-1]
+        example["best_answer"] = cand_list[res[0]]
+        
+    return example
+
+
 def load_model(model_name,tokenizer,encoder):
     """ Loads model from pickle"""
     
@@ -82,6 +116,24 @@ def load_model(model_name,tokenizer,encoder):
             pickle.dump(emb_list, e_f)
     return emb_list
 
+
+def load_labse():
+    
+    labse_file = Path(p_path+"answer_list_LaBSE-en-ru")
+    
+    if labse_file.is_file():
+        with open(p_path+"answer_list_LaBSE-en-ru", "rb") as a_f:
+            labse_list = pickle.load(a_f)
+    else:
+        labse_list = []
+        for ind in range(len(ru_ds)):
+            labse_list.append(find_best_answer(ds[ind]))
+            print(F"\rDocument: {ind}",end='')
+    
+        with open(p_path+"answer_list__LaBSE-en-ru", "wb") as a_f:   #Pickling
+            pickle.dump(labse_list, a_f)            
+    return labse_list
+
 # We lower case our text and remove stop-words from indexing
 def bm25_tokenizer(text):
     tokenized_doc = []
@@ -99,6 +151,11 @@ for passage in tqdm(questions):
 bm25 = BM25Okapi(tokenized_corpus)
 
 emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
+
+
+labse_name = 'cointegrated/LaBSE-en-ru'
+labse_index = model.index[labse_name]
+labse_dox = load_labse(labse_name,tokenizer[labse_index],encoder[labse_index])
 
 
 def find_similar_questions(question: str):

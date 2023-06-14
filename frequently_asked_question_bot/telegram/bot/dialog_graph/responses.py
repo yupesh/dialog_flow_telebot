@@ -61,13 +61,16 @@ def answer_question(ctx: Context, _: Pipeline):
     last_request = cast(TelegramMessage, last_request)
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
-
-    doc = nlp(faq.dox[int(last_request.callback_query)])
-    sentences = [sent.text.strip() for sent in doc.sents]
-    #return TelegramMessage(text=faq.dox[int(last_request.callback_query)%(len(faq.questions)//2)][0][:1000], parse_mode=ParseMode.HTML)
-    chunk = 30
-    while len("".join(sentences[:chunk])) > 4000:
-           chunk -= 1
+        
+    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru':
+        doc = faq.labse_dox[int(last_request.callback_query)]
+    else:    
+        doc = nlp(faq.dox[int(last_request.callback_query)])
+        sentences = [sent.text.strip() for sent in doc.sents]
+        #return TelegramMessage(text=faq.dox[int(last_request.callback_query)%(len(faq.questions)//2)][0][:1000], parse_mode=ParseMode.HTML)
+        chunk = 30
+        while len("".join(sentences[:chunk])) > 4000:
+               chunk -= 1
     return TelegramMessage(text="<b>This is my answer:</b>\n"+" ".join(sentences[:chunk]),parse_mode=ParseMode.HTML)
 
 

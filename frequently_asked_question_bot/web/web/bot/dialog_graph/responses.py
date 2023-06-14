@@ -74,16 +74,17 @@ def answer_similar_question(ctx: Context, _: Pipeline):
     similar_index = last_request.annotations.get("similar_question")[1]
     print("similar_index:",similar_index)
 
-    doc = faq.answers_list[faq.cur_index][similar_index]
-    similar_question  = faq.questions[similar_index]
-
-
-#     doc = nlp(doc)
-#     sentences = [sent.text.strip() for sent in doc.sents]
-#     chunk = 30
-#     while len("".join(sentences[:chunk])) > 4000:
-#            chunk -= 1
-#     doc = " ".join(sentences[:chunk])
+    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru':
+        doc = faq.labse_dox[similar_index]
+    else:
+        doc = faq.dox[similar_index]
+        similar_question  = faq.questions[similar_index]
+        doc = nlp(doc)
+        sentences = [sent.text.strip() for sent in doc.sents]
+        chunk = 30
+        while len("".join(sentences[:chunk])) > 4000:
+               chunk -= 1
+        doc = " ".join(sentences[:chunk])
 
     if similar_question is None:  # question is not similar to any of the questions
         return FALLBACK_ANSWER
