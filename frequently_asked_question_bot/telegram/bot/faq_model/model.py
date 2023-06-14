@@ -118,6 +118,9 @@ def load_model(model_name,tokenizer,encoder):
 
 
 def load_labse():
+
+    labse_name = 'cointegrated/LaBSE-en-ru'
+    labse_index = model.index(labse_name)
     
     labse_file = Path(p_path+"answer_list_LaBSE-en-ru")
     
@@ -127,7 +130,7 @@ def load_labse():
     else:
         labse_list = []
         for ind in range(len(ru_ds)):
-            labse_list.append(find_best_answer(ds[ind]))
+            labse_list.append(find_best_answer(ds[ind],labse_name,tokenizer[labse_index],encoder[labse_index]))
             print(F"\rDocument: {ind}",end='')
     
         with open(p_path+"answer_list__LaBSE-en-ru", "wb") as a_f:   #Pickling
@@ -153,9 +156,8 @@ bm25 = BM25Okapi(tokenized_corpus)
 emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
 
 
-labse_name = 'cointegrated/LaBSE-en-ru'
-labse_index = model.index(labse_name)
-labse_dox = load_labse(labse_name,tokenizer[labse_index],encoder[labse_index])
+
+labse_dox = load_labse()
 
 
 def find_similar_questions(question: str):
