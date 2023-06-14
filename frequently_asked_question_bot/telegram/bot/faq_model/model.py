@@ -129,7 +129,7 @@ def load_labse():
             labse_list = pickle.load(a_f)
     else:
         labse_list = []
-        for ind in range(len(ru_ds)):
+        for ind in range(len(ds)):
             labse_list.append(find_best_answer(ds[ind],labse_name,tokenizer[labse_index],encoder[labse_index]))
             print(F"\rDocument: {ind}",end='')
     
