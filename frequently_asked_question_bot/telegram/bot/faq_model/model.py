@@ -63,7 +63,7 @@ def find_best_answer(example,m_name,toker,encer):
         example["best_answer"] = bm25.get_top_n(example['question_text'].split(" "),cand_list,n=1)[0]
     else:
 
-        CHL = 200
+        CHL = 100
         iter_n = len(cand_list)//CHL
         emb_list = []
         flag = 0
