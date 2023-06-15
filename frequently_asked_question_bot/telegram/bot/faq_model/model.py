@@ -201,7 +201,7 @@ def find_similar_questions(question: str):
     emb = np.squeeze(q_emb)                       
     #print(emb)
     
-    emb_with_scores = tuple(list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
+    emb_with_scores = tuple(list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index]))
     #print("Here!!!!")
     res_list = []
     seen = []
