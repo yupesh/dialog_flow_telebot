@@ -18,7 +18,7 @@ ru_stopwords = stopwords.words('russian')
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
          'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
-         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-base-msmarco']
+         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco']
 
 BM25=len(model)
 
