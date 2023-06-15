@@ -7,7 +7,7 @@
 import numpy as np
 
 import faq_model.embed as embed
-from utils import cur_index, BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25_tokenizer, test_ce
+from faq_model.utils import cur_index, BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25_tokenizer, test_ce
 
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
