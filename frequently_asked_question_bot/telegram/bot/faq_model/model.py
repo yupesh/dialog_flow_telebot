@@ -208,7 +208,7 @@ def find_similar_questions(question: str):
     if model[cur_index] == "Luyu/co-condenser-marco-retriever":
         top_list = []
         for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-30:]:
-            top_list.append((el[0],el[1],test_ce(question,dox[el[0]])))
+            top_list.append((el[0],el[1],test_ce(question,dox[el[1]])))
 
         sorted_tuple = sorted(test_list, key=lambda el: el[2],reverse=True)
     else:
