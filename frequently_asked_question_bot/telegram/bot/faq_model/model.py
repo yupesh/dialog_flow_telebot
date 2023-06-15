@@ -4,6 +4,7 @@
 # This module defines AI-dependent functions.
 # """
 
+import os
 import torch
 from pathlib import Path
 from tqdm.autonotebook import tqdm
