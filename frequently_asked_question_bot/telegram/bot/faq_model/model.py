@@ -11,6 +11,7 @@ import string
 
 import numpy as np
 from transformers import AutoTokenizer, AutoModel
+from sentence_transformers.cross_encoder import CrossEncoder
 from datasets import load_from_disk
 import pickle
 
@@ -45,10 +46,9 @@ encoder = [AutoModel.from_pretrained(model[i]) for i in range(len(model))]
 for i in range(len(model)):
     encoder[i].to(embed.device)
 
-model_path = max(Path(model_save_path).glob('*/'), key=os.path.getmtime)
-print(model_path)
-encoder[model.index('Luyu/co-condenser-marco-retriever')] = AutoModel.from_pretrained(model_path)
-tokenizer[model.index('Luyu/co-condenser-marco-retriever')] = AutoTokenizer.from_pretrained(model_path)
+ce_path = max(Path(model_save_path).glob('*/'), key=os.path.getmtime)
+print(ce_path)
+ce_model = CrossEncoder(ce_path, num_labels=1, max_length = 512)
 
 ds = load_from_disk(data_path)
 
@@ -101,24 +101,21 @@ def load_model(model_name,tokenizer,encoder):
         with open(p_path+"emb_list_"+model_name.split("/")[1], "rb") as e_f:   # Unpickling
             emb_list = pickle.load(e_f)
     else:
-        if 'co-condenser-marco-retriever' in model_name:
-            src = dox
-        else:
-            src = questions
+
         emb_list = []
         CHL = 100
-        iter_n = len(src)//CHL
+        iter_n = 2*q_len//CHL
         for idx in range(iter_n):
-            q_emb = embed.encode(src[idx*CHL:(idx+1)*CHL],tokenizer,encoder,model_name)
+            q_emb = embed.encode(questions[idx*CHL:(idx+1)*CHL],tokenizer,encoder,model_name)
             #q_emb = np.squeeze(q_emb)
             emb_list.extend(q_emb)
             print(F"\rQuestion: {idx}",end='')
         print("\n")
-        if len(src)%CHL > 0:
-            q_emb = embed.encode(src[iter_n*CHL:len(src)],tokenizer,encoder,model_name)
+        if 2*q_len%CHL > 0:
+            q_emb = embed.encode(questions[iter_n*CHL:2*q_len],tokenizer,encoder,model_name)
             emb_list.extend(q_emb)
         #print(emb_list)
-            print(F"\rQuestion: {len(src)%CHL}")
+            print(F"\rQuestion: {2*q_len%CHL}")
         with open(p_path+"emb_list_"+model_name.split("/")[1], "wb") as e_f:   #Pickling
             pickle.dump(emb_list, e_f)
     return emb_list
@@ -166,6 +163,9 @@ emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(mode
 
 labse_dox = load_labse()
 
+def test_ce(query,doc):
+    return ce_model.predict([query,doc], convert_to_numpy=True, show_progress_bar=False)
+
 
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
@@ -200,17 +200,20 @@ def find_similar_questions(question: str):
     emb = np.squeeze(q_emb)                       
     #print(emb)
     
-    if len(emb_list[cur_index]) == q_len:
-        emb_with_scores = tuple(zip(questions[:q_len],list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
-    else:
-        emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
+    emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     #print("Here!!!!")
     res_tuple = ()
     seen = []
-    sorted_tuple = sorted(filter(lambda x: x[2] > 0.1, emb_with_scores), key=lambda x: x[2], reverse=True)
-    print("sorted:",sorted_tuple[:5])
+    if model[cur_index] == "Luyu/co-condenser-marco-retriever":
+        top_list = []
+        for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-30:]:
+            top_list.append((el[0],el[1],test_ce(question,dox[el[0]])))
+
+        sorted_tuple = sorted(test_list, key=lambda el: el[2],reverse=True)
+    else:
+        sorted_tuple = sorted(filter(lambda x: x[2] > 0.1, emb_with_scores), key=lambda x: x[2], reverse=True)
+        #print("sorted:",sorted_tuple[:5])
     for item in sorted_tuple:
-        #if len(res_tuple)
         if item[1] not in seen:
             seen.append(item[1])
             res_tuple += (item,)
