@@ -60,7 +60,7 @@ def answer_question(ctx: Context, _: Pipeline):
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
   
-    if cur_index != M25 and model[cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
+    if cur_index != BM25 and model[cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
         doc = labse_dox[int(last_request.callback_query)]
     else:    
         doc = nlp(dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
