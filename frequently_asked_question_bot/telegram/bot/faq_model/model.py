@@ -25,7 +25,7 @@ import faq_model.embed as embed
 ru_stopwords = stopwords.words('russian')
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
-         'OpenMatch/cocodr-large-msmarco','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
+         'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
          'DeepPavlov/distilrubert-base-cased-conversational']
 
 BM25=len(model)
@@ -52,7 +52,7 @@ ds = load_from_disk(data_path)
 dox = list(ds['document_plaintext'])
 questions = list(ds['question_text']) + list(ds['question_text_2'])
 
-q_len = len(questions)//2
+q_len = len(dox)
 
 def find_best_answer(example,m_name,toker,encer):
 
@@ -97,21 +97,25 @@ def load_model(model_name,tokenizer,encoder):
     if emb_file.is_file():
         with open(p_path+"emb_list_"+model_name.split("/")[1], "rb") as e_f:   # Unpickling
             emb_list = pickle.load(e_f)
-    else:    
+    else:
+        if 'co-condenser-marco-retriever' in model_name:
+            src = dox
+        else:
+            src = questions
         emb_list = []
         CHL = 100
-        iter_n = len(questions)//CHL
+        iter_n = len(src)//CHL
         for idx in range(iter_n):
-            q_emb = embed.encode(questions[idx*CHL:(idx+1)*CHL],tokenizer,encoder,model_name)
+            q_emb = embed.encode(src[idx*CHL:(idx+1)*CHL],tokenizer,encoder,model_name)
             #q_emb = np.squeeze(q_emb)
             emb_list.extend(q_emb)
             print(F"\rQuestion: {idx}",end='')
         print("\n")
-        if len(questions)%CHL > 0:
-            q_emb = embed.encode(questions[iter_n*CHL:len(questions)],tokenizer,encoder,model_name)
+        if len(src)%CHL > 0:
+            q_emb = embed.encode(src[iter_n*CHL:len(src)],tokenizer,encoder,model_name)
             emb_list.extend(q_emb)
         #print(emb_list)
-            print(F"\rQuestion: {len(questions)%CHL}")
+            print(F"\rQuestion: {len(src)%CHL}")
         with open(p_path+"emb_list_"+model_name.split("/")[1], "wb") as e_f:   #Pickling
             pickle.dump(emb_list, e_f)
     return emb_list
@@ -193,7 +197,10 @@ def find_similar_questions(question: str):
     emb = np.squeeze(q_emb)                       
     #print(emb)
     #emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: np.linalg.norm(x - emb), cur_emb_list)))
-    emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
+    if len(emb_list[cur_index]) == q_len:
+        emb_with_scores = tuple(zip(questions[:q_len],list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index]))
+    else:
+        emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     #print("Here!!!!")
     res_tuple = ()
     seen = []

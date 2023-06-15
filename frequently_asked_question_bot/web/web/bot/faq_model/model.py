@@ -52,7 +52,7 @@ def find_best_answer(example,m_name,toker,encer):
         example["best_answer"] = bm25.get_top_n(example['question_text'].split(" "),cand_list,n=1)[0]
     else:
 
-        CHL = 200
+        CHL = 100
         iter_n = len(cand_list)//CHL
         emb_list = []
         flag = 0
@@ -73,9 +73,9 @@ def find_best_answer(example,m_name,toker,encer):
         
         emb_with_scores = tuple(zip(list(range(len(start))), map(lambda x: embed.cos(x,emb_list[0]), emb_list[1:])))
         res= sorted(emb_with_scores, key=lambda x: x[1])[-1]
-        example["best_answer"] = cand_list[res[0]]
+        #example["best_answer"] = cand_list[res[0]]
         
-    return example
+    return cand_list[res[0]]
 
 def load_model(model_name,tokenizer,encoder):
     """ Loads model from pickle"""
@@ -104,9 +104,10 @@ def load_model(model_name,tokenizer,encoder):
     return emb_list
 
 def load_labse():
-    
+
     labse_name = 'cointegrated/LaBSE-en-ru'
-    labse_index = model.index[labse_name]
+    labse_index = model.index(labse_name)
+    
     labse_file = Path(p_path+"answer_list_LaBSE-en-ru")
     
     if labse_file.is_file():
@@ -114,7 +115,7 @@ def load_labse():
             labse_list = pickle.load(a_f)
     else:
         labse_list = []
-        for ind in range(len(ru_ds)):
+        for ind in range(len(ds)):
             labse_list.append(find_best_answer(ds[ind],labse_name,tokenizer[labse_index],encoder[labse_index]))
             print(F"\rDocument: {ind}",end='')
     
@@ -122,8 +123,20 @@ def load_labse():
             pickle.dump(labse_list, a_f)            
     return labse_list
 
-    
-tokenized_corpus = [doc.split(" ") for doc in questions]
+# We lower case our text and remove stop-words from indexing
+def bm25_tokenizer(text):
+    tokenized_doc = []
+    for token in text.lower().split():
+        token = token.strip(string.punctuation)
+
+        if len(token) > 0 and token not in ru_stopwords:
+            tokenized_doc.append(token)
+    return tokenized_doc
+
+tokenized_corpus = []
+for passage in tqdm(questions):
+    tokenized_corpus.append(bm25_tokenizer(passage))
+
 bm25 = BM25Okapi(tokenized_corpus)
 
 emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]

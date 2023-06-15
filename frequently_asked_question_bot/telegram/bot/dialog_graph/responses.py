@@ -10,14 +10,11 @@ from dff.pipeline import Pipeline
 from dff.script.core.message import Button
 from dff.messengers.telegram import TelegramMessage, TelegramUI, ParseMode
 import faq_model.model as faq
-#import spacy
 from spacy.lang.ru import Russian
 
 
 nlp = Russian()
 nlp.add_pipe('sentencizer')
-
-#from faq_model.model import questions, dox, model, cur_model, cur_tokenizer, cur_encoder, tokenizer, encoder, emb_list, cur_emb_list
 
 def suggest_similar_questions(ctx: Context, _: Pipeline):
     """Suggest questions similar to user's query by showing buttons with those questions."""
@@ -62,12 +59,11 @@ def answer_question(ctx: Context, _: Pipeline):
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
         
-    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru':
+    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
         doc = faq.labse_dox[int(last_request.callback_query)]
     else:    
-        doc = nlp(faq.dox[int(last_request.callback_query)])
+        doc = nlp(faq.dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
         sentences = [sent.text.strip() for sent in doc.sents]
-        #return TelegramMessage(text=faq.dox[int(last_request.callback_query)%(len(faq.questions)//2)][0][:1000], parse_mode=ParseMode.HTML)
         chunk = 30
         while len("".join(sentences[:chunk])) > 4000:
                chunk -= 1
