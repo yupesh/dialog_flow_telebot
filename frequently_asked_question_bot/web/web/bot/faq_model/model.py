@@ -4,6 +4,7 @@ Model
 This module defines AI-dependent functions.
 """
 
+import os
 import torch
 from pathlib import Path
 
@@ -11,6 +12,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from transformers import AutoTokenizer, AutoModel
+from sentence_transformers.cross_encoder import CrossEncoder
 from datasets import load_from_disk
 import pickle
 
@@ -22,8 +24,8 @@ from numpy.linalg import norm
 import bot.faq_model.embed as embed
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
-         'OpenMatch/cocodr-large-msmarco','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
-         'DeepPavlov/distilrubert-base-cased-conversational']
+         'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
+         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-base-msmarco']
 BM25=len(model)
 cur_index = 0
 
@@ -34,6 +36,10 @@ tokenizer = [AutoTokenizer.from_pretrained(model[i]) for i in range(len(model))]
 encoder = [AutoModel.from_pretrained(model[i]) for i in range(len(model))]
 for i in range(len(model)):
     encoder[i].to(embed.device)
+
+ce_path = max(Path(model_save_path).glob('*/'), key=os.path.getmtime)
+print(ce_path)
+ce_model = CrossEncoder(ce_path, num_labels=1, max_length = 512)
 
 
 ds = load_from_disk(data_path)
