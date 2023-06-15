@@ -9,7 +9,7 @@ from dff.script import Context
 from dff.pipeline import Pipeline
 from dff.script.core.message import Button
 from dff.messengers.telegram import TelegramMessage, TelegramUI, ParseMode
-import faq_model.model as faq
+import faq_model.utils as faq
 from spacy.lang.ru import Russian
 
 
