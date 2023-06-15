@@ -201,22 +201,21 @@ def find_similar_questions(question: str):
     emb = np.squeeze(q_emb)                       
     #print(emb)
     
-    emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
+    emb_with_scores = tuple(list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     #print("Here!!!!")
-    res_tuple = ()
+    res_list = []
     seen = []
     if model[cur_index] == "Luyu/co-condenser-marco-retriever":
         top_list = []
-        for el in sorted(filter(lambda x: x[2] > 0.1, emb_with_scores), key=lambda x: x[2])[-30:]:
-            top_list.append((el[0],el[1],test_ce(question,dox[el[1]])))
+        for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-30:]:
+            top_list.append((el[0],test_ce(question,dox[el[0]])))
 
-        sorted_tuple = sorted(top_list, key=lambda el: el[2],reverse=True)
+        sorted_tuple = sorted(top_list, key=lambda el: el[1],reverse=True)
     else:
-        sorted_tuple = sorted(filter(lambda x: x[2] > 0.1, emb_with_scores), key=lambda x: x[2], reverse=True)
+        sorted_tuple = sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1], reverse=True)
         #print("sorted:",sorted_tuple[:5])
     for item in sorted_tuple:
-        if item[1] not in seen:
-            seen.append(item[1])
-            res_tuple += (item,)
-    return res_tuple[:5]
+        if item[0] not in res_list:
+            res_list.append(item[0])
+    return res_list[:5]
 

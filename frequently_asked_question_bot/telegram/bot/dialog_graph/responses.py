@@ -35,7 +35,7 @@ def suggest_similar_questions(ctx: Context, _: Pipeline):
             )
     return TelegramMessage(
                     text="I found similar questions in my database                                                                                                   :",
-                    ui=TelegramUI(buttons=[Button(text=q[0], payload=str(q[1])) for q in similar_questions], row_width = 1)
+                    ui=TelegramUI(buttons=[Button(text=faq.questions[q], payload=str(q)) for q in similar_questions], row_width = 1)
                 )
 
 
