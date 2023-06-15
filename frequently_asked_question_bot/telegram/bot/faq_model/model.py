@@ -196,7 +196,7 @@ def find_similar_questions(question: str):
     q_emb = embed.encode(question,tokenizer[cur_index],encoder[cur_index],model[cur_index])
     emb = np.squeeze(q_emb)                       
     #print(emb)
-    #emb_with_scores = tuple(zip(questions,list(range(q_len))+list(range(q_len)), map(lambda x: np.linalg.norm(x - emb), cur_emb_list)))
+    
     if len(emb_list[cur_index]) == q_len:
         emb_with_scores = tuple(zip(questions[:q_len],list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     else:
