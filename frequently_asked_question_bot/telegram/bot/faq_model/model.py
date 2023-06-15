@@ -137,7 +137,7 @@ def load_labse():
             labse_list.append(find_best_answer(ds[ind],labse_name,tokenizer[labse_index],encoder[labse_index]))
             print(F"\rDocument: {ind}",end='')
     
-        with open(p_path+"answer_list__LaBSE-en-ru", "wb") as a_f:   #Pickling
+        with open(p_path+"answer_list_LaBSE-en-ru", "wb") as a_f:   #Pickling
             pickle.dump(labse_list, a_f)            
     return labse_list
 
