@@ -38,14 +38,17 @@ p_path = '/home/yuri/pickle/'
 #p_path = '/app/pickle/'
 #data_path = '/Users/yuriypeshkichev/Projects/itmo internship/ruonly_dataset/'
 #data_path = '/app/ru_dataset_3/'
-
+model_save_path = '/home/yuri/saved_models/' #Path to save model benchmarks
 
 tokenizer = [AutoTokenizer.from_pretrained(model[i]) for i in range(len(model))]
 encoder = [AutoModel.from_pretrained(model[i]) for i in range(len(model))]
 for i in range(len(model)):
     encoder[i].to(embed.device)
 
-
+model_path = max(Path(model_save_path).glob('*/'), key=os.path.getmtime)
+print(model_path)
+encoder[model.index('Luyu/co-condenser-marco-retriever')] = AutoModel.from_pretrained(model_path)
+tokenizer[model.index('Luyu/co-condenser-marco-retriever')] = AutoTokenizer.from_pretrained(model_path)
 
 ds = load_from_disk(data_path)
 
