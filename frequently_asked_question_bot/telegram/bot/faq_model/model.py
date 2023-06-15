@@ -177,7 +177,7 @@ def find_similar_questions(question: str):
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
-        res_tuple = ()
+        res_list = []
         seen = []
         for d in doc:
             if d not in seen:
@@ -186,14 +186,14 @@ def find_similar_questions(question: str):
                 for i,q in enumerate(questions):
                     if q not in seen:
                         if d[:20] in q:
-                            res_tuple += ((q,i%q_len),)
+                            res_list.append(i%q_len)
                             seen.append(q)
                             break
-            if len(res_tuple) == 5:
+            if len(res_list) == 5:
                 break
 
         #print("tuple:",res_tuple)
-        return res_tuple
+        return res_list
 
                            
                            
