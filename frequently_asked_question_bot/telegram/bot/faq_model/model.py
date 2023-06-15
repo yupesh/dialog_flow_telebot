@@ -7,13 +7,13 @@
 import numpy as np
 
 import faq_model.embed as embed
-from faq_model.utils import cur_index, BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25_tokenizer, test_ce
+from faq_model.utils import cur_index, BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, bm25_tokenizer, test_ce
 
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
 
     print("cur_index:",cur_index)
-    
+
     if cur_index == BM25:
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
@@ -35,11 +35,11 @@ def find_similar_questions(question: str):
 
         #print("tuple:",res_tuple)
         return res_list
-                       
+
     q_emb = embed.encode(question,tokenizer[cur_index],encoder[cur_index],model[cur_index])
-    emb = np.squeeze(q_emb)                       
+    emb = np.squeeze(q_emb)
     #print(emb)
-    
+
     emb_with_scores = tuple(zip(list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     #print("Here!!!!")
     res_list = []
@@ -57,4 +57,3 @@ def find_similar_questions(question: str):
         if item[0] not in res_list:
             res_list.append(item[0])
     return res_list[:5]
-

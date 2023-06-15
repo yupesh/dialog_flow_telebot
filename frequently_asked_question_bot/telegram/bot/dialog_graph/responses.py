@@ -79,7 +79,6 @@ def change_model(ctx: Context, _: Pipeline):
     last_request = ctx.last_request
     model_name = last_request.text.split(" ")[2]
     print("model_name:",model_name)
-    print("cur_index:",faq.cur_index)
     if model_name == "bm25":
         if faq.cur_index == faq.BM25:
             return TelegramMessage(text="Current model is BM25")
@@ -97,4 +96,5 @@ def change_model(ctx: Context, _: Pipeline):
                 faq.cur_index = i
                 model_name = faq.model[i]
                 break
+    print("cur_index:",faq.cur_index)
     return TelegramMessage(text=F"Model changed to {model_name}")
