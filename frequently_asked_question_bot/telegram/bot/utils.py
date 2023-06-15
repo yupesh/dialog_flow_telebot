@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 from rank_bm25 import BM25Okapi
-import nltk
+#import nltk
+from nltk.corpus import stopwords
 #nltk.download('stopwords')
 from tqdm.autonotebook import tqdm
 import string
