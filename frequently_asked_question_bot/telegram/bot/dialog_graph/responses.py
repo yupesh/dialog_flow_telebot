@@ -58,10 +58,8 @@ def answer_question(ctx: Context, _: Pipeline):
     last_request = cast(TelegramMessage, last_request)
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
-    
-    print("index:",last_request.callback_query)
-    
-    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
+  
+    if faq.cur_index != faq.BM25 and faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
         doc = faq.labse_dox[int(last_request.callback_query)]
     else:    
         doc = nlp(faq.dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
