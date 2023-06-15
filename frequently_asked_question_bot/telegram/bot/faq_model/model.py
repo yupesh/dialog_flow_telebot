@@ -7,7 +7,9 @@
 import numpy as np
 
 import faq_model.embed as embed
-from faq_model.utils import cur_index, BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, bm25_tokenizer, test_ce
+from faq_model.utils import BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, bm25_tokenizer, test_ce
+
+cur_index = 1
 
 def find_similar_questions(question: str):
     """Return a list of similar questions from the database."""
@@ -46,7 +48,7 @@ def find_similar_questions(question: str):
     seen = []
     if model[cur_index] == "Luyu/co-condenser-marco-retriever":
         top_list = []
-        for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-30:]:
+        for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-10:]:
             top_list.append((el[0],test_ce(question,dox[el[0]])))
 
         sorted_tuple = sorted(top_list, key=lambda el: el[1],reverse=True)

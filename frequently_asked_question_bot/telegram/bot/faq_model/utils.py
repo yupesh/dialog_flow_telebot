@@ -14,7 +14,6 @@ import pickle
 
 import faq_model.embed as embed
 
-
 ru_stopwords = stopwords.words('russian')
 
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
@@ -22,8 +21,6 @@ model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
          'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-base-msmarco']
 
 BM25=len(model)
-
-cur_index = 1
 
 data_path = '/home/yuri/ruonly_dataset/'
 p_path = '/home/yuri/pickle/'

@@ -9,7 +9,8 @@ from dff.script import Context
 from dff.pipeline import Pipeline
 from dff.script.core.message import Button
 from dff.messengers.telegram import TelegramMessage, TelegramUI, ParseMode
-import faq_model.utils as faq
+from faq_model.utils import questions, BM25, dox, labse_dox, model
+from faq_model.utils import cur_index
 from spacy.lang.ru import Russian
 
 
@@ -35,7 +36,7 @@ def suggest_similar_questions(ctx: Context, _: Pipeline):
             )
     return TelegramMessage(
                     text="I found similar questions in my database                                                                                                   :",
-                    ui=TelegramUI(buttons=[Button(text=faq.questions[q], payload=str(q)) for q in similar_questions], row_width = 1)
+                    ui=TelegramUI(buttons=[Button(text=questions[q], payload=str(q)) for q in similar_questions], row_width = 1)
                 )
 
 
@@ -59,10 +60,10 @@ def answer_question(ctx: Context, _: Pipeline):
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
   
-    if faq.cur_index != faq.BM25 and faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
-        doc = faq.labse_dox[int(last_request.callback_query)]
+    if cur_index != M25 and model[cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
+        doc = labse_dox[int(last_request.callback_query)]
     else:    
-        doc = nlp(faq.dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
+        doc = nlp(dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
         sentences = [sent.text.strip() for sent in doc.sents]
         chunk = 30
         while len("".join(sentences[:chunk])) > 4000:
@@ -80,21 +81,21 @@ def change_model(ctx: Context, _: Pipeline):
     model_name = last_request.text.split(" ")[2]
     print("model_name:",model_name)
     if model_name == "bm25":
-        if faq.cur_index == faq.BM25:
+        if cur_index == BM25:
             return TelegramMessage(text="Current model is BM25")
         else:
-            faq.cur_index = faq.BM25
-            print("cur_index changed to:",faq.cur_index)
+            cur_index = BM25
+            print("cur_index changed to:",cur_index)
     else:
-        if faq.cur_index != faq.BM25:
+        if cur_index != BM25:
             
-            if model_name in faq.model[faq.cur_index]:
-                return TelegramMessage(text=F"Current model is {faq.model[faq.cur_index]}")
+            if model_name in model[cur_index]:
+                return TelegramMessage(text=F"Current model is {model[cur_index]}")
     
-        for i in range(len(faq.model)):
-            if faq.model[i].split("/")[1] in last_request.text:
-                faq.cur_index = i
-                model_name = faq.model[i]
+        for i in range(len(model)):
+            if model[i].split("/")[1] in last_request.text:
+                cur_index = i
+                model_name = model[i]
                 break
-    print("cur_index:",faq.cur_index)
+    print("cur_index:",cur_index)
     return TelegramMessage(text=F"Model changed to {model_name}")
