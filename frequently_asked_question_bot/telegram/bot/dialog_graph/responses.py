@@ -10,7 +10,7 @@ from dff.pipeline import Pipeline
 from dff.script.core.message import Button
 from dff.messengers.telegram import TelegramMessage, TelegramUI, ParseMode
 from faq_model.utils import questions, BM25, dox, labse_dox, model
-from faq_model.utils import cur_index
+from faq_model.model import cur_index
 from spacy.lang.ru import Russian
 
 
