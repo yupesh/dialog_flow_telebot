@@ -48,20 +48,6 @@ questions = list(ds['question_text']) + list(ds['question_text_2'])
 
 q_len = len(dox)
 
-tokenized_corpus = []
-for passage in tqdm(questions):
-    tokenized_corpus.append(bm25_tokenizer(passage))
-
-bm25 = BM25Okapi(tokenized_corpus)
-
-
-
-emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
-
-
-
-labse_dox = load_labse()
-
 def test_ce(query,doc):
     return ce_model.predict([query,doc], convert_to_numpy=True, show_progress_bar=False)
 
@@ -162,3 +148,13 @@ def bm25_tokenizer(text):
         if len(token) > 0 and token not in ru_stopwords:
             tokenized_doc.append(token)
     return tokenized_doc
+
+
+tokenized_corpus = []
+for passage in tqdm(questions):
+    tokenized_corpus.append(bm25_tokenizer(passage))
+
+bm25 = BM25Okapi(tokenized_corpus)
+
+emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
+labse_dox = load_labse()
