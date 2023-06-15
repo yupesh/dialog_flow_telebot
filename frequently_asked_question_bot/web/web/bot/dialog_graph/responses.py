@@ -12,7 +12,8 @@ from dff.script import Context
 from dff.script import Message
 from dff.pipeline import Pipeline
 #from ..faq_model.model import faq
-import bot.faq_model.model as faq
+import bot.faq_model.utils as faq
+import bot.faq_model.model as fm
 
 from spacy.lang.ru import Russian
 
@@ -64,17 +65,17 @@ def answer_similar_question(ctx: Context, _: Pipeline):
     print("text:",last_request.text)
 
     if last_request.text == "change model":
-        faq.cur_index = (faq.cur_index+1)%(len(faq.model)+1)
-        if faq.cur_index == faq.BM25:
+        fm.cur_index = (fm.cur_index+1)%(len(faq.model)+1)
+        if fm.cur_index == faq.BM25:
             model_name = "BM25"
         else:
-            model_name = faq.model[faq.cur_index]
+            model_name = faq.model[fm.cur_index]
         return get_bot_answer(F"model changed to {model_name}","")
 
-    similar_index = last_request.annotations.get("similar_question")[1]
+    similar_index = last_request.annotations.get("similar_question")
     print("similar_index:",similar_index)
 
-    if faq.model[faq.cur_index] == 'cointegrated/LaBSE-en-ru':
+    if faq.model[fm.cur_index] == 'cointegrated/LaBSE-en-ru':
         doc = faq.labse_dox[similar_index]
     else:
         doc = faq.dox[similar_index]

@@ -7,7 +7,7 @@
 import numpy as np
 
 import faq_model.embed as embed
-from faq_model.utils import BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, bm25_tokenizer, test_ce
+from faq_model.utils import BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, test_ce
 
 cur_index = 1
 
