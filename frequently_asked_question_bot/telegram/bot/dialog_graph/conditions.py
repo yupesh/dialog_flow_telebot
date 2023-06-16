@@ -14,7 +14,7 @@ def received_text(ctx: Context, _: Pipeline):
     """Return true if the last update from user contains text."""
     last_request = ctx.last_request
 
-    print("text:",last_request.text)
+    #print("text:",last_request.text)
     if last_request.text is not None:
         if "switch to" not in last_request.text and "/restart" not in last_request.text:
             return True
@@ -22,10 +22,10 @@ def received_text(ctx: Context, _: Pipeline):
         
 
 def received_change(ctx: Context, _: Pipeline):
-    """Return true if the last update from user contains text."""
+    """Return true if the last update from user contains changing request."""
     last_request = ctx.last_request
 
-    print("change:",last_request.text)
+    #print("change:",last_request.text)
     if last_request.text is not None:
         if "switch to" in last_request.text:
             return True

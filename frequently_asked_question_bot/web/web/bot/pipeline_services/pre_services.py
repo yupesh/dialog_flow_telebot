@@ -11,7 +11,6 @@ from ..faq_model.model import find_similar_question
 def question_processor(ctx: Context):
     """Store the most similar question to user's query in the `annotations` field of a message."""
     last_request = ctx.last_request
-    print("l_req:",last_request)
     if last_request is None or last_request.text is None:
         return
     else:

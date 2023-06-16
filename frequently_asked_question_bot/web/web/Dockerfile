@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY requirements.txt requirements.txt
 RUN python3 -m pip install --upgrade pip
-RUN pip3 install -r requirements.txt --no-cache-dir
+RUN pip3 install -r requirements.txt
 
 #ARG src="./ru_dataset_3/"
 #ARG target="/app/ru_dataset_3/"

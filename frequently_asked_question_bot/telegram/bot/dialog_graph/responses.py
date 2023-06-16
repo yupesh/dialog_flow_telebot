@@ -51,7 +51,7 @@ def answer_question(ctx: Context, _: Pipeline):
     """Answer a question asked by a user by pressing a button."""
     if ctx.validation:  # this function requires non-empty fields and cannot be used during script validation
         return TelegramMessage()
-    print("INN2")
+    #print("INN2")
     last_request = ctx.last_request
     if last_request is None:
         raise RuntimeError("No last requests.")
@@ -79,7 +79,7 @@ def change_model(ctx: Context, _: Pipeline):
     
     last_request = ctx.last_request
     model_name = last_request.text.split(" ")[2]
-    print("model_name:",model_name)
+    #print("model_name:",model_name)
     if model_name == "bm25":
         if fm.cur_index == BM25:
             return TelegramMessage(text="Current model is BM25")
@@ -97,5 +97,5 @@ def change_model(ctx: Context, _: Pipeline):
                 fm.cur_index = i
                 model_name = model[i]
                 break
-    print("cur_index:",fm.cur_index)
+    #print("cur_index:",fm.cur_index)
     return TelegramMessage(text=F"Model changed to {model_name}")

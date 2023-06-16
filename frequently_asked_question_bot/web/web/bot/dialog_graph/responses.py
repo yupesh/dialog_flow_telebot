@@ -21,12 +21,12 @@ nlp = Russian()
 nlp.add_pipe('sentencizer')
 
 def get_bot_answer(question: str, doc: str) -> Message:
-    """The Message the bot will return as an answer if the most similar question is `question`."""
+    """Forms bot answer from doc for asked question"""
     if doc != "":
         message = F"Q: {question} <br> A: {doc}"
     else:
         message = question
-    print(message)
+    #print(message)
     return Message(text=message)
 
 
@@ -53,7 +53,7 @@ FALLBACK_NODE_MESSAGE = Message(
 
 def answer_similar_question(ctx: Context, _: Pipeline):
     print("last_request:",ctx.last_request)
-    """Answer with the most similar question to user's query."""
+    """Answers with the most similar question to user's query. Or changes current retriever's model"""
     if ctx.validation:  # this function requires non-empty fields and cannot be used during script validation
         return Message()
     last_request = ctx.last_request
@@ -62,7 +62,7 @@ def answer_similar_question(ctx: Context, _: Pipeline):
     if last_request.annotations is None:
         raise RuntimeError("No annotations.")
 
-    print("text:",last_request.text)
+    #print("text:",last_request.text)
 
     if last_request.text == "change model":
         fm.cur_index = (fm.cur_index+1)%(len(faq.model)+1)
@@ -73,17 +73,17 @@ def answer_similar_question(ctx: Context, _: Pipeline):
         return get_bot_answer(F"model changed to {model_name}","")
 
     similar_index = last_request.annotations.get("similar_question")
-    print("similar_index:",similar_index)
+    #print("similar_index:",similar_index)
 
-    if faq.model[fm.cur_index] == 'cointegrated/LaBSE-en-ru':
+    similar_question  = faq.questions[similar_index]
+    if fm.cur_index != faq.BM25 and faq.model[fm.cur_index] == 'cointegrated/LaBSE-en-ru': # We collected fragments answers from tydi-qa for this model
         doc = faq.labse_dox[similar_index]
     else:
         doc = faq.dox[similar_index]
-        similar_question  = faq.questions[similar_index]
-        doc = nlp(doc)
+        doc = nlp(doc) # showing only part of the whole document, that's why splitting into sentences
         sentences = [sent.text.strip() for sent in doc.sents]
         chunk = 30
-        while len("".join(sentences[:chunk])) > 4000:
+        while len("".join(sentences[:chunk])) > 2000:
                chunk -= 1
         doc = " ".join(sentences[:chunk])
 

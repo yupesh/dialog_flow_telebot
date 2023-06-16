@@ -1,3 +1,9 @@
+"""
+Embed
+
+This module contains encoding functions to get embeddings
+"""
+
 import torch
 import random
 from numpy import dot
@@ -36,6 +42,7 @@ def cls_pooling(model_output):
 
 
 def encode(query,tokenizer,encoder,model_name):
+    """Encoding query with encoder of model_name and tokenizer"""
     set_seed(1234)
     q_token = tokenizer(query,padding=True,truncation=True,return_tensors="pt").to(device)
     set_seed(1234)        

@@ -1,3 +1,9 @@
+"""
+Utils
+-----
+This is utility module with some helper functions and data
+
+"""
 import os
 from pathlib import Path
 from rank_bm25 import BM25Okapi
@@ -16,12 +22,15 @@ import faq_model.embed as embed
 
 ru_stopwords = stopwords.words('russian')
 
+# List of models for embedding
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
          'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
          'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco']
 
+# Index for bm25 model is last one
 BM25=len(model)
 
+# Path strings
 data_path = '/home/yuri/ruonly_dataset/'
 p_path = '/home/yuri/pickle/'
 #p_path = '/Users/yuriypeshkichev/Projects/itmo internship/pickle/'
@@ -46,12 +55,15 @@ questions = list(ds['question_text']) + list(ds['question_text_2'])
 q_len = len(dox)
 
 def test_ce(query,doc):
+    """Calculating similarity score with crossencoder ce_model"""
     return ce_model.predict([query,doc], convert_to_numpy=True, show_progress_bar=False)
 
 
 
 def find_best_answer(example,m_name,toker,encer):
-
+    """Finding best answer from passage_answer_candidates of tydi-qa using
+    current model (name=m_name, tokenizer=toker, encoder=encer) 
+    """
     start = example['passage_answer_candidates']['plaintext_start_byte']
     end = example['passage_answer_candidates']['plaintext_end_byte']
     cand_list = [example['document_plaintext'].encode("utf-8")[s:e].decode("utf-8", errors="replace") for s,e in zip(start,end)]
@@ -86,7 +98,7 @@ def find_best_answer(example,m_name,toker,encer):
 
 
 def load_model(model_name,tokenizer,encoder):
-    """ Loads model from pickle"""
+    """Unpickling or encoding embeddings for model encoder with model_name and tokenizer"""
     
     emb_file = Path(p_path+"emb_list_"+model_name.split("/")[1])
     q_len = len(questions)//2
@@ -117,7 +129,7 @@ def load_model(model_name,tokenizer,encoder):
 
 
 def load_labse():
-
+    """Unpickling or calculating list of best answers for LaBSE model"""
     labse_name = 'cointegrated/LaBSE-en-ru'
     labse_index = model.index(labse_name)
     

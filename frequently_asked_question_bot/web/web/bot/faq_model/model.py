@@ -12,7 +12,7 @@ cur_index = 0
 def find_similar_question(question: str):
     """Return the most similar question from the faq database."""
 
-    print("cur_model:",cur_index)
+    #print("cur_model:",cur_index)
 
     if cur_index == BM25:
         doc = bm25.get_top_n(question.split(" "),questions,n=1)[0]
@@ -27,7 +27,7 @@ def find_similar_question(question: str):
     emb = np.squeeze(q_emb)
     emb_with_scores = tuple(zip(list(range(q_len))+list(range(q_len)), map(lambda x: embed.cos(x,emb), emb_list[cur_index])))
     
-    if model[cur_index] == "Luyu/co-condenser-marco-retriever":
+    if model[cur_index] == "Luyu/co-condenser-marco-retriever": # For this model we apply crossencoder re-ranking
         top_list = []
         for el in sorted(filter(lambda x: x[1] > 0.1, emb_with_scores), key=lambda x: x[1])[-10:]:
             top_list.append((el[0],test_ce(question,dox[el[0]])))
