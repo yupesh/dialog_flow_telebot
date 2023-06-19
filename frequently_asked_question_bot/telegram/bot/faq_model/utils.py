@@ -35,9 +35,9 @@ p_path = '/home/yuri/pickle/'
 #data_path = '/app/ru_dataset_3/'
 model_save_path = '/home/yuri/saved_models/' #Path to save model benchmarks
 
-tokenizer = [AutoTokenizer.from_pretrained(model[i]) for i in range(len(model))]
-encoder = [AutoModel.from_pretrained(model[i]) for i in range(len(model))]
-for i in range(len(model)):
+tokenizer = [AutoTokenizer.from_pretrained(model[i]) for i in range(len(model)-1)]
+encoder = [AutoModel.from_pretrained(model[i]) for i in range(len(model)-1)]
+for i in range(len(model)-1):
     encoder[i].to(embed.device)
 
 ce_path = max(Path(model_save_path).glob('*/'), key=os.path.getmtime)
@@ -161,5 +161,5 @@ for passage in tqdm(questions):
 
 bm25 = BM25Okapi(tokenized_corpus)
 
-emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model))]
+emb_list = [load_model(model[i],tokenizer[i],encoder[i]) for i in range(len(model)-1)]
 labse_dox = load_labse()
