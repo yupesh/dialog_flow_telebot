@@ -9,7 +9,7 @@ from dff.script import Context
 from dff.pipeline import Pipeline
 from dff.script.core.message import Button
 from dff.messengers.telegram import TelegramMessage, TelegramUI, ParseMode
-from faq_model.utils import questions, BM25, dox, labse_dox, model
+from faq_model.utils import questions, dox, labse_dox, model
 import faq_model.model as fm
 from spacy.lang.ru import Russian
 
@@ -60,7 +60,7 @@ def answer_question(ctx: Context, _: Pipeline):
     if last_request.callback_query is None:
         raise RuntimeError("No callback query")
   
-    if fm.cur_index != BM25 and model[fm.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
+    if model[fm.cur_index] == 'cointegrated/LaBSE-en-ru': # with labse model we collected best answer fragments from tydi-qa
         doc = labse_dox[int(last_request.callback_query)]
     else:    
         doc = nlp(dox[int(last_request.callback_query)]) # showing only part of the whole document, that's why splitting into sentences 
@@ -80,22 +80,11 @@ def change_model(ctx: Context, _: Pipeline):
     last_request = ctx.last_request
     model_name = last_request.text.split(" ")[2]
     #print("model_name:",model_name)
-    if model_name == "bm25":
-        if fm.cur_index == BM25:
-            return TelegramMessage(text="Current model is BM25")
-        else:
-            fm.cur_index = BM25
-            print("cur_index changed to:",fm.cur_index)
-    else:
-        if fm.cur_index != BM25:
-            
-            if model_name in model[fm.cur_index]:
-                return TelegramMessage(text=F"Current model is {model[fm.cur_index]}")
-    
-        for i in range(len(model)):
-            if model[i].split("/")[1] in last_request.text:
-                fm.cur_index = i
-                model_name = model[i]
-                break
+    if model_name in model[fm.cur_index]:
+        return TelegramMessage(text=F"Current model is {model[fm.cur_index]}")
+    i = 0
+    while not model[i].split("/")[1] in last_request.text:
+        i += 1
+    fm.cur_index = i
     #print("cur_index:",fm.cur_index)
-    return TelegramMessage(text=F"Model changed to {model_name}")
+    return TelegramMessage(text=F"Model changed to {model[i]}")
