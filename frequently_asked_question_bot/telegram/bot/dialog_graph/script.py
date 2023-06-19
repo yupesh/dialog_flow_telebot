@@ -15,7 +15,7 @@ from dff.script.core.message import Button
 from .responses import answer_question, suggest_similar_questions, change_model
 from .conditions import received_button_click, received_text, received_change
 
-buttons = [Button(text="switch to "+model[i].split("/")[1]) for i in range(len(model))] + [Button(text="switch to bm25")]
+buttons = [Button(text="switch to "+model[i].split("/")[1]) for i in range(len(model)-1)] + [Button(text="switch to bm25")]
 
 script = {
     "service_flow": {
