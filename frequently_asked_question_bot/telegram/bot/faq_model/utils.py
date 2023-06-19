@@ -25,7 +25,7 @@ ru_stopwords = stopwords.words('russian')
 # List of models for embedding
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
          'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
-         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco', "/bm25"]
+         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco', "bm25/bm25"]
 # Path strings
 data_path = '/home/yuri/ruonly_dataset/'
 p_path = '/home/yuri/pickle/'

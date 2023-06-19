@@ -16,7 +16,7 @@ def find_similar_questions(question: str):
 
     #print("cur_index:",cur_index)
 
-    if model[cur_index] == "bm25":
+    if "bm25" in model[cur_index]:
         doc = bm25.get_top_n(question.split(" "),questions,n=30)
         #print("doc:",doc[:100])
 
