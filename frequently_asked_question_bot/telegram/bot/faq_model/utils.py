@@ -25,7 +25,7 @@ ru_stopwords = stopwords.words('russian')
 # List of models for embedding
 model = ['Luyu/co-condenser-marco-retriever', 'cointegrated/LaBSE-en-ru',
          'sentence-transformers/multi-qa-distilbert-cos-v1','sentence-transformers/paraphrase-multilingual-mpnet-base-v2',
-         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco', "bm25"]
+         'DeepPavlov/distilrubert-base-cased-conversational','OpenMatch/cocodr-large-msmarco', "/bm25"]
 # Path strings
 data_path = '/home/yuri/ruonly_dataset/'
 p_path = '/home/yuri/pickle/'
@@ -63,7 +63,7 @@ def find_best_answer(example,m_name,toker,encer):
     start = example['passage_answer_candidates']['plaintext_start_byte']
     end = example['passage_answer_candidates']['plaintext_end_byte']
     cand_list = [example['document_plaintext'].encode("utf-8")[s:e].decode("utf-8", errors="replace") for s,e in zip(start,end)]
-    if m_name == "BM25":
+    if "bm25" in m_name:
         example["best_answer"] = bm25.get_top_n(example['question_text'].split(" "),cand_list,n=1)[0]
     else:
 
