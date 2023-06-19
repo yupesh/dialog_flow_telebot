@@ -65,18 +65,15 @@ def answer_similar_question(ctx: Context, _: Pipeline):
     #print("text:",last_request.text)
 
     if last_request.text == "change model":
-        fm.cur_index = (fm.cur_index+1)%(len(faq.model)+1)
-        if fm.cur_index == faq.BM25:
-            model_name = "BM25"
-        else:
-            model_name = faq.model[fm.cur_index]
+        fm.cur_index = (fm.cur_index+1)%len(faq.model)
+        model_name = faq.model[fm.cur_index]
         return get_bot_answer(F"model changed to {model_name}","")
 
     similar_index = last_request.annotations.get("similar_question")
     #print("similar_index:",similar_index)
 
     similar_question  = faq.questions[similar_index]
-    if fm.cur_index != faq.BM25 and faq.model[fm.cur_index] == 'cointegrated/LaBSE-en-ru': # We collected fragments answers from tydi-qa for this model
+    if faq.model[fm.cur_index] == 'cointegrated/LaBSE-en-ru': # We collected fragments answers from tydi-qa for this model
         doc = faq.labse_dox[similar_index]
     else:
         doc = faq.dox[similar_index]

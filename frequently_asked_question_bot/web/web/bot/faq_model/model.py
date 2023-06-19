@@ -5,7 +5,7 @@ This module defines AI-dependent functions.
 """
 import numpy as np
 import bot.faq_model.embed as embed
-from bot.faq_model.utils import BM25, questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, test_ce
+from bot.faq_model.utils import questions, dox, model, tokenizer, encoder, emb_list, q_len, bm25, test_ce
 
 cur_index = 0
 
@@ -14,7 +14,7 @@ def find_similar_question(question: str):
 
     #print("cur_model:",cur_index)
 
-    if cur_index == BM25:
+    if "bm25" in model[cur_index]:
         doc = bm25.get_top_n(question.split(" "),questions,n=1)[0]
 
         for i,q in enumerate(questions):
